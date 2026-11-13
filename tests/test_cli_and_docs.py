@@ -85,8 +85,13 @@ class CliTest(unittest.TestCase):
     def test_wrong_head(self):
         code, _, err = self.run_cli("verify", str(self.path), "--head", "f" * 64)
         self.assertEqual((code, err), (1, "FAILED: log does not end at the expected head hash\n"))
-        code, _, err = self.run_cli("verify", str(self.path), "--head", "abc")
-        self.assertEqual((code, err), (1, "FAILED: expected head must be 64 lowercase hex characters\n"))
+        self.assertEqual(self.run_cli("verify", str(self.path), "--head", self.head.upper())[0], 0)
+
+    def test_malformed_head_is_a_usage_error(self):
+        for bad in ("abc", "g" * 64, "f" * 65, ""):
+            code, out, err = self.run_cli("verify", str(self.path), "--head", bad)
+            self.assertEqual((code, out), (2, ""))
+            self.assertIn("--head: must be 64 hex characters", err)
 
     def test_missing_file_and_directory(self):
         missing = Path(self.tmp.name) / "nope.jsonl"
