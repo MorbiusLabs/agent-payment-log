@@ -169,7 +169,7 @@ Other limits:
 python -m unittest discover -s tests -v
 ```
 
-101 tests. They also run the demo and the examples in this README and compare the output line by line. CI runs them on Linux with Python 3.9 to 3.13, and on macOS and Windows with Python 3.13, then installs the package and runs the command line.
+102 tests. They also run the demo and the examples in this README and compare the output line by line. CI runs them on Linux with Python 3.9 to 3.13, and on macOS and Windows with Python 3.13, then installs the package and runs the command line.
 
 ## License
 
