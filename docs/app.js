@@ -640,7 +640,7 @@
       out.append(checkLine("bad", "Caught by the check", `${r.error}. ${r.stage === "chain" ? plainChainError(r.error) : ""}`.trim()));
     } else {
       out.append(checkLine("warn", "The file checks out on its own",
-        "Every hash was recomputed, so the edited file is consistent with itself. Only a hash saved earlier can expose it."));
+        "The edited file is still consistent with itself, so checking the file alone finds nothing. Only a hash saved earlier can expose it."));
     }
     if (pg.sharedHead) {
       // the counterparty checks that the history up to the head they saved is still intact
