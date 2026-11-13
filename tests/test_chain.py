@@ -183,6 +183,15 @@ class ChainTest(unittest.TestCase):
         with self.assertRaisesRegex(ChainError, "NaN is not allowed"):
             verify_file(self.path)
 
+    def test_number_too_large_and_deep_nesting_are_refused(self):
+        # 1e999 reads as infinity and very deep nesting overflows the parser; both must be a clean ChainError
+        self.path.write_bytes(b'{"x":1e999}\n')
+        with self.assertRaisesRegex(ChainError, "line 1: has a number too large to store"):
+            verify_file(self.path)
+        self.path.write_bytes(b'{"x":' + b"[" * 100000 + b"]" * 100000 + b"}\n")
+        with self.assertRaisesRegex(ChainError, "line 1: invalid JSON"):
+            verify_file(self.path)
+
     def test_invalid_json_line(self):
         self.write_three()
         self.path.write_bytes((self.lines()[0] + "\n{broken\n").encode("utf-8"))

@@ -32,6 +32,9 @@ class AmountTest(unittest.TestCase):
         self.assertEqual(to_amount(7), Decimal(7))
         self.assertEqual(to_amount(Decimal("1E+3")), Decimal(1000))
         self.assertEqual(to_amount("0." + "0" * 17 + "1"), Decimal("1E-18"))  # 18 places is fine
+        # largest allowed value, 30 digits; must not be rounded up to 1E+30 and refused
+        self.assertEqual(to_amount("9" * 30), Decimal("9" * 30))
+        self.assertEqual(to_amount("-" + "9" * 30), Decimal("-" + "9" * 30))
 
     def test_refused_types(self):
         for bad in (0.1, True, None, [1], b"1"):

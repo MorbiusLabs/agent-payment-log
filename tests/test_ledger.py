@@ -266,6 +266,12 @@ class CheckLedgerTest(unittest.TestCase):
         decision = {k: v for k, v in self.good[0].items() if k not in ("seq", "prev_hash", "hash")}
         self.assertBad("not YYYY-MM-DDTHH:MM:SSZ", dict(decision, time="2026-13-45T99:99:99Z"))
 
+    def test_unknown_or_unhashable_type(self):
+        for value in ("refund", [1], {"a": 1}, None):
+            self.path.unlink()
+            with self.subTest(type=value):
+                self.assertBad("unknown type", dict(self.approval(), type=value))
+
     def test_wrong_fields(self):
         self.assertBad("missing note", {k: v for k, v in self.approval().items() if k != "note"})
         self.path.unlink()
