@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-payment-log"
+version = "0.1.0"
+description = "Spending rules and a tamper-evident decision log for AI agents that make payments."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Morbius Labs" }]
+keywords = ["ai-agents", "payments", "stablecoins", "audit-log", "hash-chain"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Security",
+    "Topic :: Office/Business :: Financial",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/MorbiusLabs/agent-payment-log"
+
+[project.scripts]
+agent-payment-log = "agent_payment_log.__main__:main"
+
+[tool.setuptools]
+packages = ["agent_payment_log"]
