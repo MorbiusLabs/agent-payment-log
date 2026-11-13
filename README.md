@@ -10,6 +10,8 @@ An agent that can pay needs two things a human treasury already has: limits that
 
 It does not move money. Your agent asks the ledger first and pays only when the answer is `allow` or a human approved the payment.
 
+**Try it in your browser: [morbiuslabs.github.io/agent-payment-log](https://morbiuslabs.github.io/agent-payment-log/)**. Set spending rules, let an agent ask to pay, approve or reject held payments, then edit the log the way a cheater would and watch the check catch it. You can also check any log file there. Everything runs on the page, nothing is uploaded.
+
 ## Quick start
 
 Requires Python 3.9 or newer. No dependencies.
@@ -163,13 +165,23 @@ Other limits:
 - The ledger decides and records. It cannot force an agent to ask it before paying.
 - `check_ledger` cannot re-check spending limits, because the rules are not stored in the log.
 
+## The web page
+
+The page lives in [`docs/`](docs) and is served by GitHub Pages. It is plain HTML, CSS and JavaScript with no build step and no outside requests. [`docs/core.js`](docs/core.js) repeats the checks of the Python package, down to the error messages, so a log reads the same in both. The tests below prove it on the same files.
+
+To run it locally, serve the folder and open `http://localhost:8000`:
+
+```bash
+python -m http.server --directory docs
+```
+
 ## Tests
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-102 tests. They also run the demo and the examples in this README and compare the output line by line. CI runs them on Linux with Python 3.9 to 3.13, and on macOS and Windows with Python 3.13, then installs the package and runs the command line.
+115 tests. They also run the demo and the examples in this README and compare the output line by line. The web page's code runs under Node on more than a hundred broken logs and on random ledger sessions, and must give the same verdicts, messages and bytes as Python. CI runs everything on Linux with Python 3.9 to 3.13, and on macOS and Windows with Python 3.13, then installs the package and runs the command line.
 
 ## License
 
