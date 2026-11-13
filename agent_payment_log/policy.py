@@ -33,7 +33,7 @@ def to_amount(value: Amount, field: str = "amount") -> Decimal:
         raise ValueError(f"{field} must be a finite number")
     if d.as_tuple().exponent < -MAX_DECIMALS:
         raise ValueError(f"{field} has more than {MAX_DECIMALS} decimal places")
-    if abs(d) >= MAX_AMOUNT:
+    if d.copy_abs() >= MAX_AMOUNT:  # abs() would round to 28 digits first
         raise ValueError(f"{field} is too large")
     return d
 

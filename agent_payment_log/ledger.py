@@ -75,7 +75,7 @@ def check_ledger(entries: Sequence[Dict[str, Any]]) -> None:
         seq = i
         kind = e.get("type")
         where = f"entry {seq}"
-        if kind not in FIELDS:
+        if not isinstance(kind, str) or kind not in FIELDS:
             raise LedgerError(f"{where}: unknown type {kind!r}")
         fields = set(e) - CHAIN_FIELDS
         if fields != FIELDS[kind]:

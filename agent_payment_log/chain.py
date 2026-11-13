@@ -61,9 +61,15 @@ def parse_line(line: str, n: int) -> Dict[str, Any]:
         obj = json.loads(line, object_pairs_hook=_no_duplicates, parse_constant=_reject_constant)
     except ValueError as e:  # JSONDecodeError is a ValueError
         raise ChainError(f"line {n}: invalid JSON ({getattr(e, 'msg', e)})") from None
+    except RecursionError:
+        raise ChainError(f"line {n}: invalid JSON (too deeply nested)") from None
     if not isinstance(obj, dict):
         raise ChainError(f"line {n}: not a JSON object")
-    if line != canonical(obj):
+    try:
+        text = canonical(obj)
+    except ValueError:  # a number like 1e999 reads as infinity
+        raise ChainError(f"line {n}: has a number too large to store") from None
+    if line != text:
         raise ChainError(f"line {n}: not in canonical form (sorted keys, no spaces)")
     return obj
 
