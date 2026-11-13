@@ -29,6 +29,8 @@ NODE = shutil.which("node")
 if os.environ.get("CI") and not NODE:
     raise RuntimeError("CI must run the web tests: install Node.js")
 DOCS = ROOT / "docs"
+# Very deep nesting is a parse error before Python 3.12 and a ledger error after it
+VERSION_DEPENDENT = {"deep nesting"}
 
 
 def node(request):
@@ -227,7 +229,10 @@ class WebMatchesPython(unittest.TestCase):
             for (name, _), p, j in zip(cases, paths, js):
                 py = py_verify(p, head)
                 with self.subTest(case=name):
-                    if py["error"] and "invalid JSON (" in py["error"]:
+                    if name in VERSION_DEPENDENT:
+                        # Python itself words this differently from version to version
+                        self.assertEqual((py["ok"], j["ok"]), (False, False))
+                    elif py["error"] and "invalid JSON (" in py["error"]:
                         # Python's own wording of JSON syntax errors changes between versions,
                         # so only the place and the kind of error must match
                         self.assertFalse(j["ok"])
