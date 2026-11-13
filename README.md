@@ -181,7 +181,7 @@ python -m http.server --directory docs
 python -m unittest discover -s tests -v
 ```
 
-115 tests. They also run the demo and the examples in this README and compare the output line by line. The web page's code runs under Node on more than a hundred broken logs and on random ledger sessions, and must give the same verdicts, messages and bytes as Python. CI runs everything on Linux with Python 3.9 to 3.13, and on macOS and Windows with Python 3.13, then installs the package and runs the command line.
+115 tests. They also run the demo and the examples in this README and compare the output line by line. The web page's code runs under Node on more than a hundred broken logs and on random ledger sessions. It must reach the same verdict as Python on every log, with the same error message wherever Python words it the same way in every version, and write byte-identical logs. CI runs everything on Linux with Python 3.9 to 3.13, and on macOS and Windows with Python 3.13, then installs the package and runs the command line.
 
 ## License
 
