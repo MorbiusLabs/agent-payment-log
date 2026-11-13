@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Agent Payment Log</title>
+  <meta name="description" content="Spending rules and a tamper-evident decision log for AI agents that make payments. Try the rules, try to cheat, check any log in your browser.">
+  <meta property="og:title" content="Agent Payment Log">
+  <meta property="og:description" content="Spending rules and a tamper-evident decision log for AI agents that make payments. Runs in your browser, nothing is uploaded.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0d0e11" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="core.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <div class="wrap top-row">
+      <a class="brand" href="#playground" aria-label="Agent Payment Log, playground">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="2" y="9" width="9" height="14" rx="3"/><rect x="12" y="9" width="9" height="14" rx="3"/>
+          <rect x="22" y="9" width="8" height="14" rx="3"/>
+        </svg>
+        <span>agent-payment-log</span>
+      </a>
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button role="tab" id="tab-playground" aria-controls="panel-playground" data-tab="playground">Playground</button>
+        <button role="tab" id="tab-verify" aria-controls="panel-verify" data-tab="verify">Check a log</button>
+        <button role="tab" id="tab-guide" aria-controls="panel-guide" data-tab="guide">How it works</button>
+      </nav>
+      <div class="top-actions">
+        <button class="icon-btn" id="theme" type="button" aria-label="Switch theme">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z"/></svg>
+        </button>
+        <a class="icon-btn" href="https://github.com/MorbiusLabs/agent-payment-log" aria-label="Source code on GitHub" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="i-gh"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap">
+      <p class="eyebrow">Open source · Python · MIT</p>
+      <h1>Spending rules and a tamper-evident log for AI&nbsp;agents that pay.</h1>
+      <p class="lede">Set limits before money moves. Every decision is written down with the rule that made it and the person who signed off. Anyone can check the log, and any edit to the past shows.</p>
+    </section>
+
+    <!-- ============ PLAYGROUND ============ -->
+    <section class="panel wrap" id="panel-playground" role="tabpanel" aria-labelledby="tab-playground">
+      <div class="pg-grid">
+        <div class="col">
+          <div class="card">
+            <div class="card-head">
+              <h2><span class="step">1</span>Spending rules</h2>
+              <p class="hint">Checked from the top. The first rule that matches the asset and the recipient decides, like a firewall.</p>
+            </div>
+            <ol class="rules" id="rules"></ol>
+            <p class="err" id="rules-error" role="alert" hidden></p>
+            <div class="row">
+              <button class="btn ghost" id="add-rule" type="button">Add a rule</button>
+              <button class="btn ghost" id="reset-rules" type="button">Restore the example</button>
+            </div>
+          </div>
+
+          <form class="card" id="ask-form" novalidate>
+            <div class="card-head">
+              <h2><span class="step">2</span>The agent asks to pay</h2>
+              <p class="hint">Pick a ready example or fill in your own payment.</p>
+            </div>
+            <div class="chips" id="scenarios" aria-label="Example payments"></div>
+            <div class="fields">
+              <label class="field">Agent<input name="agent" autocomplete="off" spellcheck="false" value="research-agent"></label>
+              <label class="field">Recipient<input name="recipient" autocomplete="off" spellcheck="false" list="recipient-list" value="api.marketdata.example"></label>
+              <datalist id="recipient-list"></datalist>
+              <div class="field-pair">
+                <label class="field">Amount<input name="amount" inputmode="decimal" autocomplete="off" value="12.40"></label>
+                <label class="field">Asset<input name="asset" autocomplete="off" spellcheck="false" value="USDC"></label>
+              </div>
+              <label class="field">Memo <span class="opt">optional</span><input name="memo" autocomplete="off" value="price feed, 1 day"></label>
+              <label class="check"><input type="checkbox" name="reversible" checked><span>The payment can be reversed <span class="opt">(card, refundable plan)</span></span></label>
+            </div>
+            <p class="err" id="ask-error" role="alert" hidden></p>
+            <button class="btn primary wide" type="submit" id="ask">Ask the ledger</button>
+          </form>
+        </div>
+
+        <div class="col">
+          <div class="card verdict-card" id="verdict" aria-live="polite">
+            <div class="verdict-empty">
+              <p class="verdict-title">The ledger's answer shows up here.</p>
+              <p class="hint">It is one of three: <b class="t-allow">allow</b> (pay now), <b class="t-hold">hold</b> (a human decides), <b class="t-deny">deny</b> (do not pay).</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h2><span class="step">3</span>Waiting for a human</h2>
+              <p class="hint">Held payments need someone other than the agent to approve or reject them.</p>
+            </div>
+            <label class="field inline">Signing as<input id="approver" autocomplete="off" spellcheck="false" value="ops-lead"></label>
+            <ul class="pending" id="pending"></ul>
+          </div>
+
+          <div class="card">
+            <div class="card-head split">
+              <h2><span class="step">4</span>The log</h2>
+              <span class="count" id="log-count"></span>
+            </div>
+            <div class="headline" id="pg-head"></div>
+            <div class="row">
+              <button class="btn ghost" id="download" type="button">Download .jsonl</button>
+              <button class="btn ghost" id="to-verify" type="button">Check it</button>
+              <button class="btn ghost danger" id="clear-log" type="button">Clear</button>
+            </div>
+            <p class="err" id="log-error" role="alert" hidden></p>
+            <ol class="timeline" id="pg-log"></ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="card cheat" id="cheat">
+        <div class="card-head">
+          <h2><span class="step">5</span>Try to cheat</h2>
+          <p class="hint">Say the agent overspent and someone wants to hide it. Edit the file the way they would and watch the check.</p>
+        </div>
+        <div class="cheat-grid">
+          <div class="cheat-share">
+            <p class="label">The counterparty's saved copy of the head hash</p>
+            <p class="mono shared" id="shared-head">Not shared yet</p>
+            <button class="btn ghost" id="share" type="button">Share the current head</button>
+            <p class="hint">In real use you send this hash to the other side now and then, or publish it somewhere you do not control.</p>
+          </div>
+          <div class="cheat-edit">
+            <label class="field">Entry to edit<select id="cheat-entry"></select></label>
+            <div class="field-pair">
+              <label class="field">New amount<input id="cheat-amount" autocomplete="off" inputmode="decimal" value="7.5"></label>
+              <div class="field btns">
+                <button class="btn" id="cheat-change" type="button">Change amount</button>
+                <button class="btn" id="cheat-delete" type="button">Delete entry</button>
+              </div>
+            </div>
+            <label class="check"><input type="checkbox" id="cheat-rehash"><span>Then recompute every hash, like a forger who controls the whole file</span></label>
+            <div class="row"><button class="btn ghost" id="cheat-undo" type="button" disabled>Undo all edits</button></div>
+          </div>
+        </div>
+        <div class="cheat-result" id="cheat-result" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ============ VERIFY ============ -->
+    <section class="panel wrap" id="panel-verify" role="tabpanel" aria-labelledby="tab-verify" hidden>
+      <div class="card">
+        <div class="card-head">
+          <h2>Check a log file</h2>
+          <p class="hint">Any <code>.jsonl</code> log written by agent-payment-log. It is checked right here in your browser and never uploaded anywhere.</p>
+        </div>
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept=".jsonl,.json,.txt,.log,application/json,text/plain">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>
+          <span><b>Drop a log file here</b> or choose one</span>
+        </label>
+        <div class="row">
+          <button class="btn ghost" id="load-demo" type="button">Try the demo log</button>
+          <button class="btn ghost" id="load-tampered" type="button">Try a tampered copy</button>
+        </div>
+        <label class="field">Expected head hash <span class="opt">optional, if someone shared it with you</span>
+          <input id="expected-head" class="mono" autocomplete="off" spellcheck="false" placeholder="64 hex characters"></label>
+        <p class="err" id="head-error" role="alert" hidden></p>
+      </div>
+      <div id="verify-out" aria-live="polite"></div>
+    </section>
+
+    <!-- ============ GUIDE ============ -->
+    <section class="panel wrap guide" id="panel-guide" role="tabpanel" aria-labelledby="tab-guide" hidden>
+      <div class="three">
+        <div class="card">
+          <h3>Rules before money moves</h3>
+          <p>A cap per payment, a daily cap per agent, a list of allowed recipients, and a human sign-off for large or irreversible payments.</p>
+        </div>
+        <div class="card">
+          <h3>Every decision is logged</h3>
+          <p>Allowed, held, denied, approved, rejected. Each entry names the rule that decided and the person who signed off.</p>
+        </div>
+        <div class="card">
+          <h3>Anyone can check it</h3>
+          <p>Entries are hash-chained, so editing, deleting or reordering a past entry is detected. Checking needs only the file, no keys.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Why an edit cannot hide</h2>
+        <p>Each entry stores the SHA-256 hash of the entry before it, and its own hash covers everything in it. Change one amount and that entry's hash no longer matches, and every link after it breaks.</p>
+        <div class="chain" aria-hidden="true">
+          <div class="block"><span class="b-seq">#0</span><span class="b-line">allow 12.40 USDC</span><span class="b-hash">prev 0000…</span><span class="b-hash">hash b14d…</span></div>
+          <span class="link"></span>
+          <div class="block"><span class="b-seq">#1</span><span class="b-line">hold 75 USDC</span><span class="b-hash">prev b14d…</span><span class="b-hash">hash 7419…</span></div>
+          <span class="link"></span>
+          <div class="block"><span class="b-seq">#2</span><span class="b-line">allow 3 USDC</span><span class="b-hash">prev 7419…</span><span class="b-hash">hash 5138…</span></div>
+        </div>
+        <p>Someone who controls the whole file could recompute every hash. That is why you share the latest hash, the <em>head</em>, with the other side. A rewritten history no longer ends at the head they saved.</p>
+        <p><a href="#playground" class="link-btn">Try it in the playground, step 5</a></p>
+      </div>
+
+      <div class="card">
+        <h2>Use it in your agent</h2>
+        <p>Python 3.9 or newer, no dependencies.</p>
+        <div class="code"><button class="copy" type="button" data-copy="install">Copy</button><pre id="code-install">pip install git+https://github.com/MorbiusLabs/agent-payment-log</pre></div>
+        <div class="code"><button class="copy" type="button" data-copy="python">Copy</button><pre id="code-python">from agent_payment_log import PaymentLedger, PaymentRequest, Policy, Rule
+
+policy = Policy([
+    Rule(id="data-vendors", asset="USDC", max_amount="200", daily_limit="300",
+         approval_above="50", recipients=["api.marketdata.example"]),
+    Rule(id="small-anything", asset="USDC", max_amount="5", daily_limit="20"),
+])
+ledger = PaymentLedger("payments.jsonl", policy)
+
+entry = ledger.request(PaymentRequest(
+    agent="research-agent", recipient="api.marketdata.example",
+    amount="75", asset="USDC", reversible=True, memo="news archive",
+))
+
+if entry["outcome"] == "allow":
+    ...  # pay now
+elif entry["outcome"] == "hold":
+    ledger.approve(entry["seq"], approver="ops-lead", note="known vendor")
+    ...  # pay after approval</pre></div>
+        <p>Check a log from the command line. Exit code 0 means it checks out, 1 means it does not.</p>
+        <div class="code"><button class="copy" type="button" data-copy="cli">Copy</button><pre id="code-cli">agent-payment-log verify payments.jsonl --head HASH</pre></div>
+      </div>
+
+      <div class="two">
+        <div class="card">
+          <h2>What it checks</h2>
+          <ul class="ticks">
+            <li>The file is UTF-8, every line is canonical JSON, the last line is complete.</li>
+            <li>Every hash matches its entry and links to the one before it.</li>
+            <li>With a head hash, the log ends exactly there.</li>
+            <li>Only held payments get approved or rejected, each at most once, never by the paying agent, and time never runs backwards.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h2>What it does not do</h2>
+          <ul class="dashes">
+            <li>It does not move money. Your agent asks first and pays only on <b>allow</b> or after a human approves.</li>
+            <li>It does not prove who wrote the log. Share the head hash for that.</li>
+            <li>It cannot force an agent to ask before paying.</li>
+            <li>One writer per log file. There is no locking between processes.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-row">
+      <p>Runs entirely in your browser. No server, no tracking, nothing is uploaded.</p>
+      <p><a href="https://github.com/MorbiusLabs/agent-payment-log" rel="noopener">GitHub</a> · MIT license · Built by <a href="https://x.com/MorbiusLabs" rel="noopener">Morbius Labs</a></p>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">This page needs JavaScript to run the checks in your browser.</p></noscript>
+</body>
+</html>
