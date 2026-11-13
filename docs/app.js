@@ -708,7 +708,12 @@
   function initPlayground() {
     loadPlayground();
     $("#approver").value = pg.approver;
-    $("#approver").addEventListener("input", (ev) => { pg.approver = ev.target.value; savePlayground(); });
+    $("#approver").addEventListener("input", (ev) => {
+      pg.approver = ev.target.value;
+      savePlayground();
+      // an error about the previous name no longer applies
+      for (const e of document.querySelectorAll("#pending .err")) showError(e, null);
+    });
 
     const chips = $("#scenarios");
     for (const s of SCENARIOS) {
