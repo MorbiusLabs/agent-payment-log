@@ -12,7 +12,8 @@ jobs:
           # Python 3.9 builds are not published for Ubuntu 26.04, so test it on 24.04
           - os: ubuntu-24.04
             python: "3.9"
-          - os: macos-latest
+          # macOS arm64 runners are often out of capacity, the Intel image is not
+          - os: macos-15-intel
             python: "3.13"
           - os: windows-latest
             python: "3.13"
