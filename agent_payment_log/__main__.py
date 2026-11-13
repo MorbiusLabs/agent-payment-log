@@ -11,7 +11,7 @@ import argparse
 import sys
 
 from . import __version__
-from .chain import ChainError, read_entries, verify_entries
+from .chain import HASH_RE, ChainError, read_entries, verify_entries
 from .ledger import LedgerError, check_ledger
 
 
@@ -35,6 +35,13 @@ def _show(entries):
             print(f"      {line}")
 
 
+def _hash_arg(value: str) -> str:
+    value = value.strip().lower()
+    if not HASH_RE.match(value):
+        raise argparse.ArgumentTypeError("must be 64 hex characters (a SHA-256 hash)")
+    return value
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="agent-payment-log",
                                  description="Check or print an agent-payment-log file.")
@@ -43,7 +50,7 @@ def main(argv=None) -> int:
     sub.required = True
     v = sub.add_parser("verify", help="check that the log was not edited and follows the ledger rules")
     v.add_argument("path", help="log file (.jsonl)")
-    v.add_argument("--head", metavar="HASH", help="head hash the log must end at, as given to you earlier")
+    v.add_argument("--head", metavar="HASH", type=_hash_arg, help="head hash the log must end at, as given to you earlier")
     s = sub.add_parser("show", help="verify the log, then print every entry")
     s.add_argument("path", help="log file (.jsonl)")
     args = ap.parse_args(argv)
