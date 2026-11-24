@@ -185,4 +185,4 @@ python -m unittest discover -s tests -v
 
 ## License
 
-MIT. Built by [Morbius Labs](https://x.com/MorbiusLabs).
+MIT. Built by [Morbius Labs](https://x.com/morbius_labs).
